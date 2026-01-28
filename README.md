@@ -17,6 +17,8 @@ Criar um aplicativo para gestão financeira simplificada, abordando:
 
 4. Referencias de formatação de datas : https://strftime.org/
 
+5. Conventional Commits : https://www.conventionalcommits.org/en/v1.0.0/
+
 
 
 ## Preparação do ambiente
@@ -99,3 +101,7 @@ Ou seja, pode ser que o Conda não esteja ativo nesse terminal. A questão é qu
 - Criar a branch main com (git branch -m main)
 - Criar o .gitignore e adicionar os arquivos/pastas
 - Status -> Add . -> Commit -m NOME_DO_COMMIT
+- Acessar repositorio remoto vazio, selecionar SSH e copiar códigos de push
+- Colar linhas de código no Git Bash para enviar o repo local para o GitHub
+- Replicar pasta .github atualizando o .release-please-manifest.json para 0.1.0
+- Rodar commit seguindo os padrões de mercado/Conventional Commits [feat(OPCIONAL scope)(OPCIONAL !): , fix(OPCIONAL scope)(OPCIONAL !): , chore(OPCIONAL scope)(OPCIONAL !):, docs(OPCIONAL scope)(OPCIONAL !):] para garantir versionamento
