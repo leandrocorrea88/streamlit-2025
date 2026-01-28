@@ -105,3 +105,4 @@ Ou seja, pode ser que o Conda não esteja ativo nesse terminal. A questão é qu
 - Colar linhas de código no Git Bash para enviar o repo local para o GitHub
 - Replicar pasta .github atualizando o .release-please-manifest.json para 0.1.0
 - Rodar commit seguindo os padrões de mercado/Conventional Commits [feat(OPCIONAL scope)(OPCIONAL !): , fix(OPCIONAL scope)(OPCIONAL !): , chore(OPCIONAL scope)(OPCIONAL !):, docs(OPCIONAL scope)(OPCIONAL !):] para garantir versionamento
+- Acessar as opções do Repo GiHub -> Actions -> General -> Ativar "Allow GitHub Actions to create and approve pull requests" (ultima opção)
