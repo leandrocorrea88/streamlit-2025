@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.4.0...v0.5.0) (2026-01-29)
+
+
+### Features
+
+* aba de metas integrada com selic , atualização de referencia da API da Selic ([0b6d51f](https://github.com/leandrocorrea88/streamlit-2025/commit/0b6d51fbdd04b056d6c2630a192f3c44be1ede95))
+
 ## [0.4.0](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.3.0...v0.4.0) (2026-01-29)
 
 
