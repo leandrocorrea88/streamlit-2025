@@ -177,3 +177,78 @@ if file_upload:
         st.line_chart(df_data[rel])
 
 
+
+    # EXPANDER 4 - METAS (Aba 4 da Planilha)
+
+    with st.expander(label="04. Metas") as exp_Metas:
+
+        # Organizar em colunas o Expander
+        col11 , col12 = st.columns(spec=2)
+
+        with col11:
+            st.caption("Valor de início da meta")
+            # Seletor da data de inicio da meta (ocultando o label para alinhar com col2)
+            data_inicio_meta = st.date_input(label="Data de Início da Meta",
+                                             label_visibility='collapsed' ,
+                                             value=df_data.index.min() ,
+                                             min_value=df_data.index.min() ,
+                                             max_value=df_data.index.max())
+            
+            # Quando uma data anterior ao dia 5 de cada mes for selecionada, devemos pegar
+            # o valor do mês anterior, então fazemos o filtro de todas as datas que antecedem
+            # ou são iguais ao filtro e pegamos o ultimo valor
+            data_filtrada = df_data.index[df_data.index <= data_inicio_meta][-1]
+        
+        with col12:
+            # Valor do Patrimonio no periodo
+            valor_inicio = df_data.loc[data_filtrada]["Patrimonio"]
+            st.caption("Valor de início da meta")
+            st.markdown(f"**R$ {valor_inicio:.2f}**")
+            
+        
+        # Organizar as colunas dos proximos inputs
+        col21 , col22 , col23 = st.columns(spec=3)
+
+        salario_bruto_mensal = col21.number_input(label="Salário Bruto (R$)" , 
+                                                  min_value=0.0 , 
+                                                  format="%.2f" , )
+        salario_liquido_mensal = col22.number_input(label="Salário Líquido (R$)" , 
+                                                    min_value=0.0 , 
+                                                    format="%.2f" , )
+        gastos_mensal = col23.number_input(label="Gastos Mensais (R$)" , 
+                                           min_value=0.0 , 
+                                           format="%.2f" , )
+
+        col31 , col32 , col33 , col34 = st.columns(4)
+
+        total_liquido_ano = salario_liquido_mensal * 12
+        total_gastos_ano = gastos_mensal * 12
+        arrecadacao_potencial_ano = total_liquido_ano - total_gastos_ano
+        arrecadacao_potencial_mes = arrecadacao_potencial_ano / 12
+
+        with col31:
+            st.caption("Total Líquido Ano")
+            st.markdown(f"**R$ {total_liquido_ano: .2f}**")
+        
+        with col32:
+            st.caption("Total Gastos Ano")
+            st.markdown(f"**R$ {total_gastos_ano: .2f}**")
+        
+        with col33:
+            st.caption("Potencial Econ. Ano")
+            st.markdown(f"**R$ {arrecadacao_potencial_ano: .2f}**")
+        
+        with col34:
+            st.caption("Potencial Econ. Mês")
+            st.markdown(f"**R$ {arrecadacao_potencial_mes: .2f}**")
+
+        col41 , col42 = st.columns(2)
+        
+        meta_estipulada = col41.number_input(label=f"**Meta Estipulada (R$)**" , 
+                                             min_value=0.0 , 
+                                             format="%.2f")
+        
+        patrimonio_estimado = valor_inicio + meta_estipulada
+
+        col42.caption(f"**Patrimônio Estimado pós meta**")
+        col42.markdown(body=f"**R$ {patrimonio_estimado:.2f}**")
