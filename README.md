@@ -19,6 +19,8 @@ Criar um aplicativo para gestão financeira simplificada, abordando:
 
 5. Conventional Commits : https://www.conventionalcommits.org/en/v1.0.0/
 
+6. API de Taxa de Juros : https://bcb.gov.br/api/servico/sitebcb/historicotaxasjuros
+
 
 
 ## Preparação do ambiente

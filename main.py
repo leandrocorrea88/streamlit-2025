@@ -1,8 +1,26 @@
+# %%
+
 import streamlit as st
 import pandas as pd
+import requests as rqs
 
 # Funções do Projeto
+#%%
 
+@st.cache_data  # <- Fazer o cache (BACKEND servidor Python) na primeira execução até o proximo F5
+def get_selic():
+    url = "https://bcb.gov.br/api/servico/sitebcb/historicotaxasjuros"
+    response = rqs.get(url)
+    df = pd.DataFrame(response.json()['conteudo'])
+    df['DataInicioVigencia'] = pd.to_datetime(df['DataInicioVigencia']).dt.date
+    df['DataFimVigencia'] = pd.to_datetime(df['DataFimVigencia']).dt.date    
+    # A ultima data de vigencia estará sempre vazia, então vamos preencher com a data de hoje
+    df['DataFimVigencia'] = df['DataFimVigencia'].fillna(pd.Timestamp.now().date())
+    return df
+
+get_selic()
+
+# %%
 def calc_general_stats(data:pd.DataFrame):
     '''Calcular as estatisticas de Patrimonio'''
     
@@ -177,78 +195,135 @@ if file_upload:
         st.line_chart(df_data[rel])
 
 
-
     # EXPANDER 4 - METAS (Aba 4 da Planilha)
 
-    with st.expander(label="04. Metas") as exp_Metas:
+    with st.expander(label="04.Metas") as exp_Metas:
+        
+        cnt1 = st.container(border=True , vertical_alignment='bottom')
+        cnt1.caption(f"**01. Vamos definir nossos parâmetros**")
 
         # Organizar em colunas o Expander
-        col11 , col12 = st.columns(spec=2)
+        col11 , col12 , col13 , col14 = cnt1.columns(spec=4)
 
-        with col11:
-            st.caption("Valor de início da meta")
-            # Seletor da data de inicio da meta (ocultando o label para alinhar com col2)
+        with col11: # Salario Liquido Mensal
+            salario_liquido_mensal = st.number_input(label="Salário Líquido (R$)" , 
+                                                     min_value=0.0 , format="%.2f" , )
+        
+        total_liquido_ano = salario_liquido_mensal * 12
+        
+        with col12: # Salario projetado anual
+            st.caption("Total Líquido Ano" , help="Considera seu Salário Líquido x 12")
+            st.markdown(f"**R$ {total_liquido_ano: .2f}**")
+            
+        
+        with col13: # Gastos Mensais
+            gastos_mensal = st.number_input(label="Gastos Mensais (R$)" , 
+                                            min_value=0.0 , format="%.2f" , )
+        
+        total_gastos_ano = gastos_mensal * 12
+        
+        with col14: # Gastos Anualizados
+            st.caption("Total Gastos Ano", help="Considera seus Gastos Mensais x 12")
+            st.markdown(f"**R$ {total_gastos_ano: .2f}**")
+            
+        cnt2 = st.container(border=True , vertical_alignment='bottom')
+        cnt2.caption(f"**02. Vamos entender como seu dineheiro pode render**")  
+        
+        # Organizar as colunas dos proximos inputs
+        col21 , col22 , col23 = cnt2.columns(spec=3)
+
+        with col21: # Data de Referencia do Patrimonio
             data_inicio_meta = st.date_input(label="Data de Início da Meta",
-                                             label_visibility='collapsed' ,
                                              value=df_data.index.min() ,
                                              min_value=df_data.index.min() ,
                                              max_value=df_data.index.max())
             
-            # Quando uma data anterior ao dia 5 de cada mes for selecionada, devemos pegar
-            # o valor do mês anterior, então fazemos o filtro de todas as datas que antecedem
-            # ou são iguais ao filtro e pegamos o ultimo valor
-            data_filtrada = df_data.index[df_data.index <= data_inicio_meta][-1]
+        # Quando uma data anterior ao dia 5 de cada mes for selecionada, devemos pegar
+        # o valor do mês anterior, então fazemos o filtro de todas as datas que antecedem
+        # ou são iguais ao filtro e pegamos o ultimo valor
+        data_filtrada = df_data.index[df_data.index <= data_inicio_meta][-1]
         
-        with col12:
-            # Valor do Patrimonio no periodo
-            valor_inicio = df_data.loc[data_filtrada]["Patrimonio"]
-            st.caption("Valor de início da meta")
+        # Valor do Patrimonio no periodo
+        valor_inicio = df_data.loc[data_filtrada]["Patrimonio"]
+        
+        with col22: # Valor de Referencia do Patrimônio
+            st.caption("Patrimônio Inicial")
             st.markdown(f"**R$ {valor_inicio:.2f}**")
+
+        with col23: # Valor base da Selic
+            # Obter a serie historica completa da SELIC usando API
+            selic_gov = get_selic()
             
-        
-        # Organizar as colunas dos proximos inputs
-        col21 , col22 , col23 = st.columns(spec=3)
+            # Filtrando as linhas que as datas estão entre a data inicial do 
+            # calculo e a data final da meta
+            flt_selic_date = (
+                (selic_gov['DataInicioVigencia'] <= data_inicio_meta) & 
+                (selic_gov['DataFimVigencia'] >= data_inicio_meta)
+            )
+            # Definir a taxa base da Selic (Efetiva)
+            selic_default = selic_gov[flt_selic_date]['TaxaSelicEfetivaAnualizada'].iloc[0]
+            
+            # Definir o valor da API como padrão da selic
+            selic = st.number_input('Taxa de Juros %', min_value=0. , 
+                                    value=selic_default , format='%.2f', 
+                                    help="Por padrão usamos como base o valor da Selic")
 
-        salario_bruto_mensal = col21.number_input(label="Salário Bruto (R$)" , 
-                                                  min_value=0.0 , 
-                                                  format="%.2f" , )
-        salario_liquido_mensal = col22.number_input(label="Salário Líquido (R$)" , 
-                                                    min_value=0.0 , 
-                                                    format="%.2f" , )
-        gastos_mensal = col23.number_input(label="Gastos Mensais (R$)" , 
-                                           min_value=0.0 , 
-                                           format="%.2f" , )
+        cnt3 = st.container(border=True , vertical_alignment='bottom')
+        cnt3.caption(f"**03. Vamos entender o seu potencial de ganhos anual**")
 
-        col31 , col32 , col33 , col34 = st.columns(4)
+        col31 , col32 , col33 , col34 = cnt3.columns(4)
 
-        total_liquido_ano = salario_liquido_mensal * 12
-        total_gastos_ano = gastos_mensal * 12
         arrecadacao_potencial_ano = total_liquido_ano - total_gastos_ano
         arrecadacao_potencial_mes = arrecadacao_potencial_ano / 12
 
-        with col31:
-            st.caption("Total Líquido Ano")
-            st.markdown(f"**R$ {total_liquido_ano: .2f}**")
+        with col31: # Economia Mensal
+            st.caption("Potencial Econ. Mês", help="Considera a sua economia mensal (Salário - Gastos)")
+            st.markdown(f"**R$ {arrecadacao_potencial_mes: .2f}**")
         
-        with col32:
-            st.caption("Total Gastos Ano")
-            st.markdown(f"**R$ {total_gastos_ano: .2f}**")
-        
-        with col33:
-            st.caption("Potencial Econ. Ano")
+        with col32: # Economia Anual
+            st.caption("Potencial Econ. Ano", help="Sua economia mensal anualizada")
             st.markdown(f"**R$ {arrecadacao_potencial_ano: .2f}**")
         
-        with col34:
-            st.caption("Potencial Econ. Mês")
-            st.markdown(f"**R$ {arrecadacao_potencial_mes: .2f}**")
-
-        col41 , col42 = st.columns(2)
+        # 01. Converter Selic para decimal
+        selic = selic / 100
+        # 02. Calcular taxa acumulada (Juros Compostos)
+        taxa_mensal = ( (1 + selic) ** (1/12) ) - 1
+        rendimento_mensal = taxa_mensal * valor_inicio
+        # 03. Extrapolar rendimento para o ano
+        taxa_ano = selic
+        rendimento_ano = taxa_ano * valor_inicio
         
-        meta_estipulada = col41.number_input(label=f"**Meta Estipulada (R$)**" , 
-                                             min_value=0.0 , 
-                                             format="%.2f")
+        with col33: # Rendimento de Aplicação
+            st.caption(body="Rendimento Anual", 
+                        help=f"*Considera rendimentos mensais de R$ {rendimento_mensal:.2f}**")
+            st.markdown(f"**R$ {rendimento_ano:.2f}**")
+        
+        potencial_total = arrecadacao_potencial_ano + rendimento_ano
+
+        with col34:
+            st.caption("Potencial Total" , help="Soma da Economia Anual + Rendimento de Aplicações")
+            st.markdown(f"**R$ { potencial_total :.2f}**")
+
+        cnt4 = st.container(border=True , vertical_alignment='bottom')
+        cnt4.caption(f"**04. Agora vamos definir nossa meta**")
+
+        col41 , col42 , col43 = cnt4.columns(3)
+
+        with col41:
+            meta_estipulada = col41.number_input(label=f"**Meta Estipulada (R$)**" , 
+                                                min_value=0.0 , 
+                                                format="%.2f")
+
+        delta_meta = meta_estipulada - potencial_total
+
+        with col42:
+            st.metric(label="Meta vs Potencial" , value=meta_estipulada ,
+                      delta=f"{delta_meta:.2f}" , help="Compara a Meta estipulada com o Potencial calculado")
         
         patrimonio_estimado = valor_inicio + meta_estipulada
+        delta_patrimonio = (patrimonio_estimado / valor_inicio) - 1
 
-        col42.caption(f"**Patrimônio Estimado pós meta**")
-        col42.markdown(body=f"**R$ {patrimonio_estimado:.2f}**")
+        with col43:
+            st.metric(label="Crescimento de Patrimônio" , value=patrimonio_estimado ,
+                      delta=f"{delta_patrimonio*100:.2f}%")
+        
