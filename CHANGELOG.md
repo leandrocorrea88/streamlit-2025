@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.3.0...v0.4.0) (2026-01-29)
+
+
+### Features
+
+* aba de metas , patrimonio etimado ([2504be7](https://github.com/leandrocorrea88/streamlit-2025/commit/2504be72b91b3f69cc57186b2da32e2e91087827))
+
 ## [0.3.0](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.2.0...v0.3.0) (2026-01-28)
 
 
