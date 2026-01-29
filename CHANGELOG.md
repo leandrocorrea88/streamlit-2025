@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.2.0...v0.3.0) (2026-01-28)
+
+
+### Features
+
+* migração da aba de estatisticas ([6fa8586](https://github.com/leandrocorrea88/streamlit-2025/commit/6fa8586699929e0acd78afafdf095dfb652586f6))
+
 ## [0.2.0](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.1.0...v0.2.0) (2026-01-28)
 
 
