@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.6.0...v0.6.1) (2026-01-30)
+
+
+### Bug Fixes
+
+* deploy requirements sem referencias Conda ([74d9c5a](https://github.com/leandrocorrea88/streamlit-2025/commit/74d9c5ad8f2a43e145c520e828e46844a2b97878))
+
 ## [0.6.0](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.5.0...v0.6.0) (2026-01-30)
 
 
