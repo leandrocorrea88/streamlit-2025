@@ -2,6 +2,7 @@
 
 import streamlit as st
 import pandas as pd
+import numpy as np
 import requests as rqs
 
 # Funções do Projeto
@@ -17,8 +18,6 @@ def get_selic():
     # A ultima data de vigencia estará sempre vazia, então vamos preencher com a data de hoje
     df['DataFimVigencia'] = df['DataFimVigencia'].fillna(pd.Timestamp.now().date())
     return df
-
-get_selic()
 
 # %%
 def calc_general_stats(data:pd.DataFrame):
@@ -68,6 +67,56 @@ def calc_general_stats(data:pd.DataFrame):
     data = data.drop(columns=['lag_1' , 'lag_2'] , axis=1)
 
     return data
+
+# %%
+def calc_metas(data_stats:pd.DataFrame , data_inicio_meta , meta:float):
+    # Criar o dataframe com o acompanhamento das metas
+
+    # 01. Definir a lista de meses (12 meses a partir da data inicial)
+    datas = [
+        (pd.to_datetime(data_inicio_meta + pd.DateOffset(months=i)).date() ,
+        valor_inicio + ( i * (meta / 12 ) ) )
+        for i
+        in range(13)
+    ]
+    
+    # 02. Criar o dataframe e setar a coluna de Data como index
+    data = pd.DataFrame(datas, columns=['Data', 'Meta Mensal'])
+    data = data.set_index('Data')
+    
+    # 03. Concatenar com o DF de estatisticas para pegar o patrimonio realizado mensal
+    data['Patrimonio Realizado'] = (
+        pd.concat([data , data_stats[['Patrimonio']]] , axis=1)['Patrimonio']
+    )
+    
+    # 04. Calcular as diferenças
+    data['Diferença'] = data['Patrimonio Realizado'] - data['Meta Mensal']
+
+    # 05. Calcular Alcance no Mes (o quão mais rapidp o realizado se afasta do patrimonio 
+    # inicial vs a meta contra o valor inicial)
+
+    meta0 = data['Meta Mensal'].iloc[0]
+    meta1 = meta
+
+    data['Alcance'] = (
+        (data['Patrimonio Realizado'] - meta0 ) / 
+        (data['Meta Mensal'] - meta0)
+        ) 
+
+    # 06. Calcular evolução do patrimonio (com relação ao periodo anterior)
+    data['Evolução'] = (
+        (data['Patrimonio Realizado'] / data['Patrimonio Realizado'].shift(1)) - 1
+    )
+
+    # 07. Calcular meta acumulada
+    data['Meta %'] = (data['Meta Mensal'] - meta0) / meta1
+
+    # 08. Calcular alcance acumulado
+    data['Alcance %'] = (data['Patrimonio Realizado'] - meta0) / meta1
+
+    return data
+
+# %%
 
 # Persoanlizar a pagina (uma vez)
 st.set_page_config(
@@ -325,5 +374,37 @@ if file_upload:
 
         with col43:
             st.metric(label="Crescimento de Patrimônio" , value=patrimonio_estimado ,
-                      delta=f"{delta_patrimonio*100:.2f}%")
+                      delta=f"{delta_patrimonio*100:.2f}%" , help="Patrimônio Inicial + Meta Estipulada")
+    
+    # EXPANDER 5 - ACOMPANHAMENTO DE METAS (Aba 4 da Planilha)
+
+    with st.expander(label="05.Acompanhamento das Metas") as exp_AcompMetas:
+
+        df_metas = calc_metas(df_data , data_inicio_meta , meta_estipulada)
+
+        tab1 , tab2 , tab3 , tab4 = st.tabs(['Tabela', 'Meta Realizada' , 'Meta Financeira Absoluta' , 'Alcance Mensal Relativo'])
         
+        with tab1:
+            
+            columns_format = {
+                'Meta Mensal' : st.column_config.NumberColumn(label='Meta Mensal' , format="%.2f") ,
+                'Patrimonio Realizado' : st.column_config.NumberColumn(label='Patrimonio Realizado' , format="%.2f") ,
+                'Diferença' : st.column_config.NumberColumn(label='Diferença' , format='%.2f') ,
+                'Alcance' : st.column_config.NumberColumn(label='Alcance' , format="percent") ,
+                'Evolução' : st.column_config.NumberColumn(label='Evolução' , format="percent")  ,
+                'Meta %' : st.column_config.NumberColumn(label='Meta %' , format="percent") ,
+                'Alcance %' : st.column_config.NumberColumn(label='Alcance %' , format="percent") ,
+            }
+            
+            st.dataframe(df_metas , column_config=columns_format)
+        
+        with tab2:
+            cols = ['Meta %' , 'Alcance %']
+            st.line_chart(df_metas[cols])
+        
+        with tab3:
+            cols = ['Meta Mensal' , 'Patrimonio Realizado']
+            st.line_chart(df_metas[cols])
+
+        with tab4:
+            st.line_chart(df_metas['Alcance'])

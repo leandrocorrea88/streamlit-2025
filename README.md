@@ -57,12 +57,12 @@ Ou seja, pode ser que o Conda não esteja ativo nesse terminal. A questão é qu
 - Agora digite conda -- version e where conda para saber onde está a raiz do ambiente
 - Ative o ambiente base com (conda activate base)
 - Se o (conda activate base) der erro podemos ativar de modo mais manual com
--- call D:\Tools\Anaconda\condabin\activate.bat [caminho do (where conda)]
--- conda activate base
+.. call D:\Tools\Anaconda\condabin\activate.bat [caminho do (where conda)]
+.. conda activate base
 - Agora podemos inserir o comando de criação de ambiente
--- conda create --name streamlit-2025 python=3.
--- Isso vai criar o ambiente com o nome "streamlit-2025" e carregar para ele a versão mais atualizada do Python 3 com 3.
--- Confirme com o "y" a instalação do packages básicos no novo ambiente
+.. conda create --name streamlit-2025 python=3.
+.. Isso vai criar o ambiente com o nome "streamlit-2025" e carregar para ele a versão mais atualizada do Python 3 com 3.
+.. Confirme com o "y" a instalação do packages básicos no novo ambiente
 - Para visualizar os ambientes use o (conda env list) e garanta que o ambiente está criado
 - Ative o ambiente com (conda activate streamlit-2025)
 
@@ -86,14 +86,14 @@ Ou seja, pode ser que o Conda não esteja ativo nesse terminal. A questão é qu
 5. Teste o novo ambiente
 
 - Teste algum comando no streamlit
--- import streamlit as st
--- st.text("Teste de streamlit")
+.. import streamlit as st
+.. st.text("Teste de streamlit")
 - No terminal, acesse o programa usando (streamlit run main.py)
 - Veja o browser abrindo com a mensagem plotada
 - Faça mais um teste no main.py inserindo
--- st.set_page_config(page_title="Controle de Finanças 2025")
--- Se o navegador ainda estiver aberto dê um F5 e veja o titulo da pagina
--- Se o navegador foi fechado no terminal use (Crtl + C) para encerrar o servidor e rode novamente o streamlit run main.py
+.. st.set_page_config(page_title="Controle de Finanças 2025")
+.. Se o navegador ainda estiver aberto dê um F5 e veja o titulo da pagina
+.. Se o navegador foi fechado no terminal use (Crtl + C) para encerrar o servidor e rode novamente o streamlit run main.py
 
 6. Criar repositório Git
 
@@ -108,3 +108,16 @@ Ou seja, pode ser que o Conda não esteja ativo nesse terminal. A questão é qu
 - Replicar pasta .github atualizando o .release-please-manifest.json para 0.1.0
 - Rodar commit seguindo os padrões de mercado/Conventional Commits [feat(OPCIONAL scope)(OPCIONAL !): , fix(OPCIONAL scope)(OPCIONAL !): , chore(OPCIONAL scope)(OPCIONAL !):, docs(OPCIONAL scope)(OPCIONAL !):] para garantir versionamento
 - Acessar as opções do Repo GiHub -> Actions -> General -> Ativar "Allow GitHub Actions to create and approve pull requests" (ultima opção)
+
+## Deploy
+
+- Fechar o aplicativo (Crtl + C no console)
+- Gerar o arquivo de requirements com (pip freeze >> requirements.txt)
+.. Isso vai gerar o arquivo requirements.txt com a lista de todas as dependências usadas no projeto
+.. Esse arquivo é gerado na propria Main
+- Sincronizar com o GitHub (Status - Add - Commi- Push)
+- Acessar o aplicativo (se encerrou, usar streamlit run ARQUIVO.py no Terminal)
+- Clicar em Deploy e seguir os passos para publicação
+.. O vinculo será feito com o repositorio Git
+.. O nome do app não poderá ter "streamlit" no nome
+.. Caso dê problema nas referências CONDA no Deploy, edite o requirements.txt retirando todas as referências a Conda e tente novamente
