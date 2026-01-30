@@ -5,28 +5,21 @@ cachetools==6.2.6
 certifi==2026.1.4
 charset-normalizer==3.4.4
 click==8.3.1
-debugpy @ file:///D:/bld/bld/rattler-build_debugpy_1765840833/work
 gitdb==4.0.12
 GitPython==3.1.46
 idna==3.11
-ipykernel @ file:///D:/bld/bld/rattler-build_ipykernel_1761567966/work
-ipython @ file:///D:/bld/bld/rattler-build_ipython_1767621201/work
 Jinja2==3.1.6
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
-jupyter_core @ file:///D:/bld/bld/rattler-build_jupyter_core_1760643889/work
 MarkupSafe==3.0.3
 narwhals==2.15.0
 numpy==2.4.1
 pandas==2.3.3
 pillow==12.1.0
 protobuf==6.33.4
-psutil @ file:///D:/bld/bld/rattler-build_psutil_1769678167/work
 pyarrow==23.0.0
 pydeck==0.9.1
 pytz==2025.2
-pywin32 @ file:///D:/bld/bld/rattler-build_pywin32_1756487145/work
-pyzmq @ file:///D:/bld/bld/rattler-build_pyzmq_1757387025/work
 referencing==0.37.0
 requests==2.32.5
 rpds-py==0.30.0
@@ -34,7 +27,6 @@ smmap==5.0.2
 streamlit==1.53.1
 tenacity==9.1.2
 toml==0.10.2
-tornado @ file:///D:/bld/tornado_1765836441652/work
 tzdata==2025.3
 urllib3==2.6.3
 watchdog==6.0.0
