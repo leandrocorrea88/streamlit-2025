@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.6.1...v0.6.2) (2026-01-30)
+
+
+### Bug Fixes
+
+* referencias FILE de requirements ([5dddb95](https://github.com/leandrocorrea88/streamlit-2025/commit/5dddb9562da9ad74f4121f276ea113c530ac9a04))
+
 ## [0.6.1](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.6.0...v0.6.1) (2026-01-30)
 
 
