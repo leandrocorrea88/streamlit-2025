@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.5.0...v0.6.0) (2026-01-30)
+
+
+### Features
+
+* Acompanhamento de metas e deploy ([09581d1](https://github.com/leandrocorrea88/streamlit-2025/commit/09581d164cff139220b5501a9c86b2931c68d41d))
+
 ## [0.5.0](https://github.com/leandrocorrea88/streamlit-2025/compare/v0.4.0...v0.5.0) (2026-01-29)
 
 
